@@ -11,11 +11,16 @@ import { timeIntervalBarWidth } from "react-stockcharts/lib/utils";
 import PropTypes from "prop-types";
 import { scaleTime } from "d3-scale";
 
+
 function App()
 { const [startDate, setStartDate] = useState(new Date("2021/01/01"));
 const [endDate, setEndDate] = useState(new Date("2021/08/20"));
 const[symbol,setSymbol]=useState("");
 const[data,setData]=useState([]);
+
+const zoomStates = ["zoom-100", "zoom-75", "zoom-50", "zoom-25"];
+  const [zoom, setZoom] = useState(0);
+
     function DatePick() {
        
         return (
@@ -46,7 +51,7 @@ function handleClick(e)
     // console.log(end);
     const a={symbol:symbol,start:start,end:end};
     
-    fetch("https://stocks-fariz.herokuapp.com/",{method:'POST', headers: {"Content-Type": "application/json"},body:JSON.stringify(a)})
+    fetch("https://stock-backend-7odo.onrender.com",{method:'POST', headers: {"Content-Type": "application/json"},body:JSON.stringify(a)})
     .then(function(response){
        return response.json();
     }).then(function(datas){
@@ -77,7 +82,7 @@ let ChartJS = (props) => {
           height={400}
           ratio={ratio}
           width={width}
-          margin={{ left: 50, right: 50, top: 10, bottom: 30 }}
+          margin={{ left: 100, right: 0, top: 50, bottom: 50 }}
           type={type}
           data={data1}
           seriesName="MSFT"
@@ -103,7 +108,8 @@ let ChartJS = (props) => {
   };
   
   ChartJS.defaultProps = {
-    type: "svg",
+   
+    type: "hybrid",
   };
   
   ChartJS = fitWidth(ChartJS);
@@ -148,9 +154,31 @@ function Description(props)
    <div className="symbol"> <input type="text" value={symbol} onChange={(e)=>setSymbol(e.target.value)} className="form-control form-control-lg symbol-input" placeholder="enter symbol" /> </div> 
    
     <DatePick  />
-    <button type="button" type="submit" onClick={handleClick} className="btn btn-primary enter-btn">Enter</button>
+    <button type="button submit" onClick={handleClick} className="btn btn-primary enter-btn">Enter</button>
+    
+    <div>
+    <div className={`zoomable ${zoomStates[zoom]}`}>
     {data.length!=0?<CreateChart/>:<p></p> }
-    {data.length!=0?<Description symb={symbol}/>:<p></p> }
+    </div>
+    {/* <button className="zoomout"
+        onClick={() => {
+          if (zoom < 4) setZoom(zoom + 1);
+        }}
+      >
+        -
+      </button>
+      <button className="zoomin"
+        onClick={() => {
+          if (zoom > 0) setZoom(zoom - 1);
+        }}
+      >
+        +
+      </button> */}
+    </div>
+    
+      
+
+    {/* {data.length!=0?<Description symb={symbol}/>:<p></p> } */}
     <footer className="foot"> </footer>
         </div>
 }
